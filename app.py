@@ -15,20 +15,26 @@ def home():
 
 @app.route("/predict", methods=["POST"])
 def predict():
-    data = request.json
-    review = data.get("review")
-    user_label = data.get("user_label")  # what user thinks
+    try:
+        data = request.json
+        review = data.get("review")
+        user_label = data.get("user_label")
 
-    # Transform text
-    X = vectorizer.transform([review])
+        if not review:
+            return jsonify({"error": "Missing review"}), 400
 
-    # Predict
-    pred = model.predict(X)[0]
+        X = vectorizer.transform([review])
+        pred = model.predict(X)[0]  # now pred is 'deceptive' or 'truthful'
 
-    return jsonify({
-        "prediction": int(pred),
-        "user_label": user_label
-    })
+        return jsonify({
+            "prediction": pred,           # keep as string
+            "user_label": user_label
+        })
+    
+    except Exception as e:
+        import traceback
+        print(traceback.format_exc())
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     app.run()
