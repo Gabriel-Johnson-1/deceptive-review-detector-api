@@ -24,11 +24,9 @@ def predict():
 
     # Predict
     pred = model.predict(X)[0]
-    prob = model.decision_function(X)[0]
 
     return jsonify({
         "prediction": int(pred),
-        "confidence": float(prob),
         "user_label": user_label
     })
 
