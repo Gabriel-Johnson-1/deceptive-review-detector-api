@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import joblib
 from pymongo import MongoClient
-from datetime import datetime
+from datetime import datetime, timezone
 import os
 
 app = Flask(__name__)
@@ -47,6 +47,7 @@ def predict():
             "review": review,
             "user_label": user_label,
             "model_prediction": pred,
+            "created_at": datetime.now(timezone.utc) 
         }
         collection.insert_one(submission_doc)
 
