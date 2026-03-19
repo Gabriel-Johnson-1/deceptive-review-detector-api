@@ -79,9 +79,9 @@ def confusion_matrix():
 
             # Map user_label
             if user == "1":
-                actual = "truthful"
-            elif user == "0":
                 actual = "deceptive"
+            elif user == "0":
+                actual = "truthful"
             else:
                 continue
 
