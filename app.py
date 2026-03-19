@@ -59,6 +59,50 @@ def predict():
         import traceback
         print(traceback.format_exc())
         return jsonify({"error": str(e)}), 500
+    
+@app.route("/confusion-matrix", methods=["GET"])
+def confusion_matrix():
+    try:
+        data = list(collection.find())
+
+        # Initialize counts
+        cm = {
+            "TP": 0,  # truthful predicted truthful
+            "TN": 0,  # deceptive predicted deceptive
+            "FP": 0,  # deceptive predicted truthful
+            "FN": 0   # truthful predicted deceptive
+        }
+
+        for doc in data:
+            user = doc.get("user_label")
+            pred = doc.get("model_prediction")
+
+            # Map user_label
+            if user == "1":
+                actual = "truthful"
+            elif user == "0":
+                actual = "deceptive"
+            else:
+                continue
+
+            # pred already string
+            predicted = pred
+
+            if actual == "truthful" and predicted == "truthful":
+                cm["TP"] += 1
+            elif actual == "deceptive" and predicted == "deceptive":
+                cm["TN"] += 1
+            elif actual == "deceptive" and predicted == "truthful":
+                cm["FP"] += 1
+            elif actual == "truthful" and predicted == "deceptive":
+                cm["FN"] += 1
+
+        return jsonify(cm)
+
+    except Exception as e:
+        import traceback
+        print(traceback.format_exc())
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     app.run()
